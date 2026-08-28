@@ -1,0 +1,23 @@
+{
+  "synthetic_users": [
+    {
+      "username": "auditor_alice",
+      "email": "alice@aegisaudit.local",
+      "role": "auditor"
+    },
+    {
+      "username": "viewer_bob",
+      "email": "bob@aegisaudit.local",
+      "role": "viewer"
+    }
+  ],
+  "synthetic_hashes": [
+    "5f4dcc3b5aa765d61d8327deb882cf99",
+    "e10adc3949ba59abbe56e057f20f883e",
+    "$2b$12$e8N8Y9T8O4y4Y4Y4Y4Y4YuZ/xZ"
+  ],
+  "synthetic_targets": {
+    "in_scope": ["10.0.0.15", "192.168.1.100", "demo.lab"],
+    "out_of_scope": ["8.8.8.8", "172.16.0.5", "external-client.com"]
+  }
+}
