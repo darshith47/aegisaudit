@@ -1,0 +1,46 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python Caches & Virtual Environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+env/
+
+# Python Testing & Linting Caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Node & Frontend Builds
+node_modules/
+dist/
+build/
+.npm/
+
+# Output Data & Logs
+*.log
+tmp/
+temp/
+jobs/
+uploaded-wordlists/
+generated-reports/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System Files
+.DS_Store
+Thumbs.db
