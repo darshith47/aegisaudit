@@ -14,14 +14,22 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
+import hashlib
+
+
+def _prepare_password(password: str) -> str:
+    """SHA256 pre-hash password to a fixed 64-char hex string to safely bypass bcrypt 72-byte limit."""
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against stored hash."""
-    return pwd_context.verify(plain_password[:72], hashed_password)
+    return pwd_context.verify(_prepare_password(plain_password), hashed_password)
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password with bcrypt."""
-    return pwd_context.hash(password[:72])
+    return pwd_context.hash(_prepare_password(password))
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
