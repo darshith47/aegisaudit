@@ -147,6 +147,64 @@ Access the services:
 
 ---
 
+## Running on Kali Linux
+
+AegisAudit is optimized for **Kali Linux**, where native security tools (`hashcat`, `john`, `hydra`, and `/usr/share/wordlists/rockyou.txt`) are pre-installed.
+
+### Option A: Docker Compose Deployment (Recommended)
+
+```bash
+# 1. Update Kali packages and install Docker if not present
+sudo apt update && sudo apt install -y docker.io docker-compose-v2
+
+# 2. Start Docker service
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+# Log out and log back in, or run: newgrp docker
+
+# 3. Clone and start AegisAudit
+git clone <repository-url>
+cd aegisaudit
+cp .env.example .env
+docker compose up --build
+```
+
+### Option B: Native Deployment on Kali Linux (Direct Tool Integration)
+
+To connect AegisAudit directly to native Kali security binaries (`hashcat`, `john`, `hydra`):
+
+```bash
+# 1. Install prerequisites and extract wordlists
+sudo apt update
+sudo apt install -y python3-venv python3-pip nodejs npm hashcat john hydra wordlists
+sudo gzip -d /usr/share/wordlists/rockyou.txt.gz 2>/dev/null || true
+
+# 2. Clone and configure AegisAudit
+git clone <repository-url>
+cd aegisaudit
+cp .env.example .env
+
+# 3. Enable real tool execution in .env
+# Set MOCK_ENGINE=false to execute native Kali security tools
+sed -i 's/MOCK_ENGINE=true/MOCK_ENGINE=false/g' .env
+
+# 4. Start the Backend API
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+
+# 5. Start the Frontend Dashboard
+cd ../frontend
+npm install
+npm run dev
+```
+
+Access the dashboard at `http://localhost:3000` (or `http://<your-kali-ip>:3000`).
+
+---
+
 ## Local Development
 
 ### Backend Setup
