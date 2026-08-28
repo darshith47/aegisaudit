@@ -4,7 +4,7 @@ def test_register_and_login_user(client):
         "/api/v1/auth/register",
         json={
             "username": "auditor_sec",
-            "email": "sec@aegisaudit.local",
+            "email": "sec@aegisaudit.com",
             "password": "SecurePassword2026!",
             "role": "auditor"
         }
