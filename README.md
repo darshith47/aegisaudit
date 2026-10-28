@@ -412,6 +412,120 @@ aegisaudit/
 
 ---
 
+## 🔧 Troubleshooting
+
+<details>
+<summary><strong>Common Issues & Fixes</strong></summary>
+
+### Docker Compose "panic: slice bounds out of range" crash
+
+If `docker compose build` or `docker compose up --build` crashes with:
+
+```
+panic: runtime error: slice bounds out of range [1:0]
+```
+
+**Root cause:** A bug in Docker Compose's BuildKit Bake integration (affects Compose v2.30–v2.32).
+
+**Permanent fix — upgrade Docker Compose:**
+
+```bash
+# Check your current version
+docker compose version
+
+# Update to the latest stable release
+sudo apt update && sudo apt install -y docker-compose-v2
+# Or install manually:
+# sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+#   -o /usr/local/lib/docker/cli-plugins/docker-compose
+# sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+```
+
+**Temporary workaround (if you cannot upgrade):**
+
+```bash
+sudo env COMPOSE_BAKE=false docker compose up --build -d
+```
+
+> Note: `COMPOSE_BAKE=false` prints a deprecation warning. Upgrading Compose is the proper fix.
+
+### Missing frontend/package-lock.json
+
+If `npm ci` fails because `package-lock.json` is missing:
+
+```bash
+cd frontend
+npm install          # generates package-lock.json
+npm ci               # clean reproducible install
+npm run build        # TypeScript check + Vite production build
+```
+
+### Backend module not found errors in pytest
+
+If pytest fails with `ModuleNotFoundError: No module named 'app'`, ensure `pythonpath` is set in `pyproject.toml`:
+
+```toml
+[tool.pytest.ini_options]
+pythonpath = ["."]
+```
+
+### Prerequisites checklist
+
+```bash
+# Install system dependencies (Kali / Debian / Ubuntu)
+sudo apt update
+sudo apt install -y docker.io docker-compose-v2 nodejs npm python3-venv python3-pip git
+
+# Add your user to the docker group (avoids needing sudo for docker)
+sudo usermod -aG docker $USER && newgrp docker
+
+# Copy the environment configuration
+cp .env.example .env
+```
+
+### Quick start commands
+
+```bash
+# Build and start all services
+docker compose up --build -d
+
+# Check service status
+docker compose ps
+
+# Verify endpoints
+curl http://localhost:8000/health   # Backend health check
+curl http://localhost:3000          # Frontend dashboard
+
+# View logs if a service fails
+docker compose logs backend
+docker compose logs frontend
+
+# Stop everything
+docker compose down
+```
+
+### Running checks locally (without Docker)
+
+```bash
+# Backend
+cd backend
+python -m venv .venv
+source .venv/bin/activate          # Linux/macOS
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+ruff check . && black --check . && mypy app && pytest
+
+# Frontend
+cd frontend
+npm ci
+npm run build
+npm audit
+```
+
+</details>
+
+---
+
 ## 📚 Technical Documentation Links
 
 Deep dive into the architecture and security design:

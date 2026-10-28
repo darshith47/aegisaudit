@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Server, Plus, Play } from 'lucide-react';
+import { Plus, Play } from 'lucide-react';
 import { api } from '../services/api';
 import { Assessment, Scope } from '../types';
 

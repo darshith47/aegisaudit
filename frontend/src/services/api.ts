@@ -22,7 +22,7 @@ async function fetchJSON<T>(url: string, options: RequestInit = {}): Promise<T> 
 
 export const api = {
   // Auth
-  login: async (username: string, password: str) => {
+  login: async (username: string, password: string) => {
     const formData = new URLSearchParams();
     formData.append('username', username);
     formData.append('password', password);

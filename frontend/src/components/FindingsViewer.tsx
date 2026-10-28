@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, ShieldAlert, Key } from 'lucide-react';
 import { api } from '../services/api';
 import { Finding } from '../types';
 
@@ -19,7 +18,7 @@ export const FindingsViewer: React.FC = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {findings.length === 0 ? (
-          <div className="glass-card" style={{ textCenter: 'center', color: '#9ca3af' }}>
+          <div className="glass-card" style={{ textAlign: 'center', color: '#9ca3af' }}>
             No security findings recorded yet. Launch an assessment job to generate audit findings.
           </div>
         ) : (

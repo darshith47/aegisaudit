@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Lock } from 'lucide-react';
 import { api } from '../services/api';
 import { AuditLog } from '../types';
 

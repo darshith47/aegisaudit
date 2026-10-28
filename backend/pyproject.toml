@@ -47,6 +47,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
+pythonpath = ["."]
 addopts = "-ra -q --cov=app --cov-report=term-missing"
 testpaths = ["tests"]
 python_files = ["test_*.py"]

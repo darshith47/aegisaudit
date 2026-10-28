@@ -1,6 +1,6 @@
 export interface Scope {
   id: number;
-  name: str;
+  name: string;
   description?: string;
   allowed_targets: string;
   allowed_ports: string;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Cpu, CheckCircle2, AlertOctagon } from 'lucide-react';
 import { api } from '../services/api';
 import { Job } from '../types';
 

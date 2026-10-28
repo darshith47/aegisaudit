@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Shield, AlertTriangle, CheckCircle, Cpu, Lock } from 'lucide-react';
+import { Shield, AlertTriangle, Cpu, Lock } from 'lucide-react';
 import { api } from '../services/api';
 import { Assessment, Job, Finding } from '../types';
 
