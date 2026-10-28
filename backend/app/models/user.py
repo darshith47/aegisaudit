@@ -1,8 +1,9 @@
 import enum
 from datetime import datetime
-from sqlalchemy import String, Enum, DateTime, Boolean, Integer
+from typing import TYPE_CHECKING, List
+
+from sqlalchemy import Boolean, DateTime, Enum, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List, TYPE_CHECKING
 
 from app.db.base import Base
 

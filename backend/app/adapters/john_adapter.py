@@ -1,11 +1,12 @@
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Tuple
+
 from app.adapters.base import BaseEngineAdapter
 
 
 class JohnAdapter(BaseEngineAdapter):
     """John the Ripper Password Auditing Engine Adapter."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(name="John the Ripper", category="Password Audit", requires_network=False)
 
     def build_command(self, target: str, parameters: Dict[str, Any]) -> List[str]:
@@ -24,17 +25,21 @@ class JohnAdapter(BaseEngineAdapter):
             if "loaded 1 password hash" in line.lower() or "password hash" in line.lower():
                 continue
             if "(" in line and ")" in line:
-                findings.append({
-                    "title": "Weak Password Cracked (John the Ripper)",
-                    "severity": "HIGH",
-                    "vulnerability_type": "Weak Password Policy",
-                    "target": line.strip(),
-                    "details": f"John the Ripper cracked credential: {line.strip()}",
-                    "remediation": "Update user credentials and enforce robust password complexity filters."
-                })
+                findings.append(
+                    {
+                        "title": "Weak Password Cracked (John the Ripper)",
+                        "severity": "HIGH",
+                        "vulnerability_type": "Weak Password Policy",
+                        "target": line.strip(),
+                        "details": f"John the Ripper cracked credential: {line.strip()}",
+                        "remediation": "Update user credentials and enforce robust password complexity filters.",
+                    }
+                )
         return findings
 
-    def generate_mock_results(self, target: str, parameters: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
+    def generate_mock_results(
+        self, target: str, parameters: Dict[str, Any]
+    ) -> Tuple[str, List[Dict[str, Any]]]:
         mock_output = (
             "[DEMO / MOCK] John the Ripper 1.9.0-jumbo-1 initialized.\n"
             "[DEMO / MOCK] Loaded 1 password hash (raw-sha256 [SHA256 256/256 AVX2 8x]).\n"
@@ -51,7 +56,7 @@ class JohnAdapter(BaseEngineAdapter):
                 "vulnerability_type": "Weak Password Policy",
                 "target": target,
                 "details": "Simulated Audit Result: Hash cracked via dictionary ruleset. Recovered plaintext: 'password123' for user_admin.",
-                "remediation": "Rotate compromised account credentials and mandate password manager usage."
+                "remediation": "Rotate compromised account credentials and mandate password manager usage.",
             }
         ]
         return mock_output, findings

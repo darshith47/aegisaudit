@@ -1,10 +1,14 @@
-from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.finding import FindingSeverity
 
 
 class FindingResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     assessment_id: int
     title: str
@@ -16,6 +20,3 @@ class FindingResponse(BaseModel):
     evidence_id: Optional[int]
     is_mock: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True

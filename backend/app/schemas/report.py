@@ -1,6 +1,6 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+
+from pydantic import BaseModel
 
 
 class ReportRequest(BaseModel):

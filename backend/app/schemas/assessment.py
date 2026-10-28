@@ -1,6 +1,8 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.assessment import AssessmentStatus
 from app.schemas.scope import ScopeResponse
 
@@ -14,6 +16,8 @@ class AssessmentCreate(BaseModel):
 
 
 class AssessmentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     description: Optional[str]
@@ -24,6 +28,3 @@ class AssessmentResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     scope: Optional[ScopeResponse] = None
-
-    class Config:
-        from_attributes = True

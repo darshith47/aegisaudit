@@ -1,7 +1,8 @@
 from datetime import datetime
-from sqlalchemy import String, DateTime, Text, Integer
+from typing import TYPE_CHECKING, List
+
+from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List, TYPE_CHECKING
 
 from app.db.base import Base
 

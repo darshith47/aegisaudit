@@ -1,8 +1,9 @@
 import enum
 from datetime import datetime
-from sqlalchemy import String, Enum, DateTime, Text, ForeignKey, Integer, Float, JSON
+from typing import TYPE_CHECKING, Optional
+
+from sqlalchemy import JSON, DateTime, Enum, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Optional, TYPE_CHECKING
 
 from app.db.base import Base
 
@@ -22,9 +23,13 @@ class Job(Base):
     __tablename__ = "jobs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    assessment_id: Mapped[int] = mapped_column(Integer, ForeignKey("assessments.id"), nullable=False)
+    assessment_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("assessments.id"), nullable=False
+    )
     engine_name: Mapped[str] = mapped_column(String(64), nullable=False)
-    status: Mapped[JobStatus] = mapped_column(Enum(JobStatus), default=JobStatus.QUEUED, nullable=False)
+    status: Mapped[JobStatus] = mapped_column(
+        Enum(JobStatus), default=JobStatus.QUEUED, nullable=False
+    )
     progress: Mapped[float] = mapped_column(Float, default=0.0)
     parameters: Mapped[dict] = mapped_column(JSON, default=dict)
     output: Mapped[str] = mapped_column(Text, default="")

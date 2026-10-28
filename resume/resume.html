@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[YOUR NAME] - Cybersecurity & Application Security Resume</title>
+    <style>
+        /* CSS Reset & Base Variables */
+        :root {
+            --primary: #0B1220;      /* Dark Navy */
+            --accent: #00B8D4;       /* Vivid Cyan Accent */
+            --accent-dark: #00838F;  /* Deep Cyan for printable contrast */
+            --text-main: #1E293B;    /* Charcoal readable text */
+            --text-muted: #475569;   /* Slate secondary text */
+            --border-color: #E2E8F0; /* Subtle divider lines */
+            --bg-pill: #F0FDFA;      /* Subtle cyan tint for skill badges */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Calibri, sans-serif;
+            color: var(--text-main);
+            background-color: #F8FAFC;
+            font-size: 9pt;
+            line-height: 1.35;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* A4 Page Container */
+        .resume-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 15px auto;
+            padding: 12mm 15mm;
+            background: #FFFFFF;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+        }
+
+        /* Header Section */
+        header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        h1.name {
+            font-size: 20pt;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            line-height: 1.1;
+        }
+
+        .title-tagline {
+            font-size: 10.5pt;
+            font-weight: 600;
+            color: var(--accent-dark);
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+
+        .contact-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 8.5pt;
+            color: var(--text-muted);
+        }
+
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .contact-item a {
+            color: var(--accent-dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Section Layout */
+        section {
+            margin-bottom: 9px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            border-bottom: 1.5px solid var(--border-color);
+            padding-bottom: 2px;
+            margin-bottom: 5px;
+        }
+
+        .section-title {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .section-accent-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            margin-right: 6px;
+            display: inline-block;
+        }
+
+        /* Summary */
+        .summary-text {
+            font-size: 8.8pt;
+            color: var(--text-main);
+            text-align: justify;
+            line-height: 1.38;
+        }
+
+        /* Skills Layout (Flexbox, No Tables) */
+        .skills-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 3.5px;
+        }
+
+        .skill-group {
+            display: flex;
+            align-items: baseline;
+            font-size: 8.5pt;
+            line-height: 1.3;
+        }
+
+        .skill-group-title {
+            width: 140px;
+            font-weight: 700;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .skill-items {
+            color: var(--text-main);
+            flex-grow: 1;
+        }
+
+        /* Projects Section */
+        .project-item {
+            margin-bottom: 7px;
+        }
+
+        .project-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .project-top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .project-title {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .project-tech {
+            font-size: 8.2pt;
+            font-weight: 600;
+            color: var(--accent-dark);
+            margin-left: 6px;
+        }
+
+        .project-date {
+            font-size: 8pt;
+            font-weight: 500;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .bullet-list {
+            list-style-type: disc;
+            margin-left: 15px;
+            margin-top: 3px;
+        }
+
+        .bullet-list li {
+            font-size: 8.5pt;
+            line-height: 1.32;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .bullet-list li strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Education & Certifications Layout */
+        .entry-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2px;
+        }
+
+        .entry-title {
+            font-size: 8.8pt;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .entry-subtitle {
+            font-size: 8.3pt;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .entry-date {
+            font-size: 8pt;
+            font-weight: 500;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .cert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5px;
+        }
+
+        .cert-item {
+            font-size: 8.5pt;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cert-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Print Media Settings for Exact 1-Page A4 Output */
+        @page {
+            size: A4 portrait;
+            margin: 8mm 12mm;
+        }
+
+        @media print {
+            body {
+                background: white;
+                font-size: 8.5pt;
+            }
+
+            .resume-page {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            a {
+                color: var(--primary);
+                text-decoration: none;
+            }
+
+            .section-header {
+                border-bottom: 1.5px solid var(--accent);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="resume-page">
+
+    <!-- 1. Header: Contact & Links -->
+    <header>
+        <h1 class="name">[YOUR NAME]</h1>
+        <div class="title-tagline">Cybersecurity & Application Security Engineer</div>
+        <div class="contact-bar">
+            <span class="contact-item">📍 [CITY], [COUNTRY/STATE]</span>
+            <span class="contact-item">✉️ <a href="mailto:[EMAIL]">[EMAIL]</a></span>
+            <span class="contact-item">📞 [PHONE]</span>
+            <span class="contact-item">🔗 <a href="[LINKEDIN URL]" target="_blank">linkedin.com/in/[LINKEDIN-USERNAME]</a></span>
+            <span class="contact-item">🐙 <a href="[GITHUB URL]" target="_blank">github.com/[GITHUB-USERNAME]</a></span>
+        </div>
+    </header>
+
+    <!-- 2. Professional Summary -->
+    <section>
+        <div class="section-header">
+            <span class="section-accent-dot"></span>
+            <h2 class="section-title">Professional Summary</h2>
+        </div>
+        <p class="summary-text">
+            Results-driven Application Security & Cybersecurity Engineer skilled in building secure-by-design systems, target scope validation engines, and automated assessment tools. Proficient in web vulnerabilities (OWASP Top 10), penetration testing toolkits, and modern backend architectures with FastAPI, Python, and Docker. Passionate about defending enterprise environments through automated guardrails, immutable compliance logging, and actionable risk reporting.
+        </p>
+    </section>
+
+    <!-- 3. Technical Skills -->
+    <section>
+        <div class="section-header">
+            <span class="section-accent-dot"></span>
+            <h2 class="section-title">Technical Skills</h2>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-group">
+                <span class="skill-group-title">Security Tools & Auditing:</span>
+                <span class="skill-items">Hashcat, John the Ripper, Hydra, Nmap, Burp Suite, Wireshark, SecLists, Metasploit, Linux Kali</span>
+            </div>
+            <div class="skill-group">
+                <span class="skill-group-title">Programming & Scripting:</span>
+                <span class="skill-items">Python 3 (FastAPI, SQLAlchemy, Pytest, Pydantic), Bash Scripting, TypeScript, JavaScript, SQL</span>
+            </div>
+            <div class="skill-group">
+                <span class="skill-group-title">Web & Frameworks:</span>
+                <span class="skill-items">FastAPI, React 18, Vite, RESTful API Design, JWT Authentication, OAuth2, Bcrypt, Tailwind/CSS3</span>
+            </div>
+            <div class="skill-group">
+                <span class="skill-group-title">DevOps & Environments:</span>
+                <span class="skill-items">Docker, Docker Compose, Git/GitHub, GitHub Actions (CI/CD), PostgreSQL, Redis, Linux/Unix Administration</span>
+            </div>
+            <div class="skill-group">
+                <span class="skill-group-title">Core Security Concepts:</span>
+                <span class="skill-items">Role-Based Access Control (RBAC), Scope Boundary Enforcement, OWASP Top 10, Forensic Integrity (SHA-256)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Projects -->
+    <section>
+        <div class="section-header">
+            <span class="section-accent-dot"></span>
+            <h2 class="section-title">Security Engineering Projects</h2>
+        </div>
+
+        <!-- Project 1: AegisAudit -->
+        <div class="project-item">
+            <div class="project-top-line">
+                <div>
+                    <span class="project-title">AegisAudit — Authorized Credential Security Assessment Platform</span>
+                    <span class="project-tech">| Python, FastAPI, React, TypeScript, Docker, PostgreSQL, Redis</span>
+                </div>
+                <span class="project-date">[MONTH YEAR] – Present</span>
+            </div>
+            <ul class="bullet-list">
+                <li><strong>Architected Centralized Scope Engine:</strong> Designed a pre-execution validation gate in Python that checks target CIDRs, IPs, hostnames, and ports, rejecting 100% of out-of-scope testing requests to guarantee legal compliance.</li>
+                <li><strong>Engineered Security Tool Adapters:</strong> Built an extensible adapter pattern standardizing CLI parameter parsing for Hashcat, John the Ripper, and Hydra, enforcing typed argument vectors (`shell=False`) to eliminate shell-injection risks.</li>
+                <li><strong>Built Cryptographic Chain-of-Custody:</strong> Developed an automated forensic evidence service computing SHA-256 digests over raw assessment telemetry, ensuring non-repudiation and tamper detection across all audit records.</li>
+                <li><strong>Designed Safe Simulation Mode:</strong> Implemented an asynchronous mock execution runner (`MOCK_ENGINE=true`) delivering realistic audit telemetry, enabling zero-risk stakeholder demonstrations and reliable automated CI testing.</li>
+                <li><strong>Automated Executive Compliance Reporting:</strong> Created a dual Markdown and HTML report generator translating technical findings into prioritized business risk metrics, cutting manual documentation time by [ADD METRIC, e.g., 80%].</li>
+            </ul>
+        </div>
+
+        <!-- Project 2: Web Application Security Handbook & Lab -->
+        <div class="project-item">
+            <div class="project-top-line">
+                <div>
+                    <span class="project-title">Web Application Security Assessment Handbook & Testing Lab</span>
+                    <span class="project-tech">| Burp Suite, Python, Docker, OWASP Top 10</span>
+                </div>
+                <span class="project-date">[MONTH YEAR]</span>
+            </div>
+            <ul class="bullet-list">
+                <li><strong>Executed Comprehensive Vulnerability Audits:</strong> Researched and documented exploitation and remediation playbooks for SQL Injection, Cross-Site Scripting (XSS), Broken Object Level Authorization (BOLA), and JWT tampering.</li>
+                <li><strong>Constructed Reproducible Vulnerable Labs:</strong> Built containerized web application testbeds using Docker Compose to benchmark defensive secure-coding patterns, input sanitization routines, and CSP configurations.</li>
+                <li><strong>Developed Custom Security Automation:</strong> Authored Python scripts to automate endpoint fuzzing, authorization header verification, and TLS configuration audits across [ADD METRIC, e.g., 20+] test targets.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 5. Education -->
+    <section>
+        <div class="section-header">
+            <span class="section-accent-dot"></span>
+            <h2 class="section-title">Education</h2>
+        </div>
+        <div class="entry-row">
+            <div>
+                <span class="entry-title">[BACHELOR OF SCIENCE / TECHNOLOGY IN COMPUTER SCIENCE / INFORMATION SECURITY]</span>
+                <div class="entry-subtitle">[UNIVERSITY / COLLEGE NAME] — [CITY, COUNTRY/STATE]</div>
+            </div>
+            <span class="entry-date">[GRADUATION YEAR / EXPECTED 2026]</span>
+        </div>
+        <div style="font-size: 8.2pt; color: var(--text-muted); margin-top: 2px;">
+            <strong>Relevant Coursework:</strong> Network Security, Cryptography, Operating Systems, Computer Networks, Database Management Systems, Software Engineering.
+        </div>
+    </section>
+
+    <!-- 6. Certifications & Training -->
+    <section>
+        <div class="section-header">
+            <span class="section-accent-dot"></span>
+            <h2 class="section-title">Certifications & Professional Development</h2>
+        </div>
+        <div class="cert-list">
+            <div class="cert-item">
+                <span class="cert-name">[CERTIFICATION NAME, e.g., CompTIA Security+ / eJPT / CEH]</span>
+                <span class="entry-date">[ISSUING BODY, YEAR / IN PROGRESS]</span>
+            </div>
+            <div class="cert-item">
+                <span class="cert-name">[ADDITIONAL CERTIFICATION / COURSE, e.g., PortSwigger Web Security Academy Certified]</span>
+                <span class="entry-date">[ISSUING BODY, YEAR]</span>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>

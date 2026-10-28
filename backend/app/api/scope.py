@@ -1,13 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.core.scope_engine import ScopeEngine
+from app.core.security import get_current_user, require_role
 from app.db.session import get_db
 from app.models.scope import Scope
 from app.models.user import User, UserRole
-from app.schemas.scope import ScopeCreate, ScopeResponse, ScopeValidationRequest, ScopeValidationResult
-from app.core.security import get_current_user, require_role
-from app.core.scope_engine import ScopeEngine
+from app.schemas.scope import (
+    ScopeCreate,
+    ScopeResponse,
+    ScopeValidationRequest,
+    ScopeValidationResult,
+)
 
 router = APIRouter(prefix="/scope", tags=["Scope Management"])
 
@@ -16,15 +22,15 @@ router = APIRouter(prefix="/scope", tags=["Scope Management"])
 def create_scope(
     scope_in: ScopeCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.AUDITOR]))
-):
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.AUDITOR])),
+) -> Scope:
     """Define a new authorized assessment target scope policy."""
     scope = Scope(
         name=scope_in.name,
         description=scope_in.description,
         allowed_targets=scope_in.allowed_targets,
         allowed_ports=scope_in.allowed_ports,
-        allowed_protocols=scope_in.allowed_protocols
+        allowed_protocols=scope_in.allowed_protocols,
     )
     db.add(scope)
     db.commit()
@@ -33,13 +39,17 @@ def create_scope(
 
 
 @router.get("/", response_model=List[ScopeResponse])
-def list_scopes(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def list_scopes(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+) -> List[Scope]:
     """List all authorized target scope policies."""
     return db.query(Scope).order_by(Scope.id.desc()).all()
 
 
 @router.get("/{scope_id}", response_model=ScopeResponse)
-def get_scope(scope_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_scope(
+    scope_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+) -> Scope:
     """Get scope policy by ID."""
     scope = db.query(Scope).filter(Scope.id == scope_id).first()
     if not scope:
@@ -51,23 +61,20 @@ def get_scope(scope_id: int, db: Session = Depends(get_db), current_user: User =
 def validate_target_scope(
     val_req: ScopeValidationRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+    current_user: User = Depends(get_current_user),
+) -> ScopeValidationResult:
     """Validate whether a target IP/domain/port/protocol is permitted by scope policy."""
     scope = db.query(Scope).filter(Scope.id == val_req.scope_id).first()
     if not scope:
         raise HTTPException(status_code=404, detail="Scope policy not found.")
 
     is_allowed, reason = ScopeEngine.validate_target(
-        scope=scope,
-        target=val_req.target,
-        port=val_req.port,
-        protocol=val_req.protocol
+        scope=scope, target=val_req.target, port=val_req.port, protocol=val_req.protocol
     )
 
     return ScopeValidationResult(
         is_allowed=is_allowed,
         scope_id=val_req.scope_id,
         target=val_req.target,
-        reason=reason
+        reason=reason,
     )

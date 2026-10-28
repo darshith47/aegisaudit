@@ -8,8 +8,8 @@ def test_assessment_and_job_execution(client, auth_headers, test_scope):
             "description": "Authorized audit against internal lab server",
             "target": "10.0.0.15",
             "engine": "hydra",
-            "scope_id": test_scope.id
-        }
+            "scope_id": test_scope.id,
+        },
     )
     assert ass_res.status_code == 201
     assessment_id = ass_res.json()["id"]
@@ -18,7 +18,10 @@ def test_assessment_and_job_execution(client, auth_headers, test_scope):
     job_res = client.post(
         "/api/v1/jobs/launch",
         headers=auth_headers,
-        json={"assessment_id": assessment_id, "parameters": {"username": "admin", "service": "ssh", "port": 22}}
+        json={
+            "assessment_id": assessment_id,
+            "parameters": {"username": "admin", "service": "ssh", "port": 22},
+        },
     )
     assert job_res.status_code == 201
     job_data = job_res.json()
@@ -35,8 +38,8 @@ def test_job_rejection_out_of_scope(client, auth_headers, test_scope):
             "title": "Unauthorized External Scan Attempt",
             "target": "8.8.8.8",
             "engine": "hydra",
-            "scope_id": test_scope.id
-        }
+            "scope_id": test_scope.id,
+        },
     )
     assert ass_res.status_code == 201
     assessment_id = ass_res.json()["id"]
@@ -45,7 +48,10 @@ def test_job_rejection_out_of_scope(client, auth_headers, test_scope):
     job_res = client.post(
         "/api/v1/jobs/launch",
         headers=auth_headers,
-        json={"assessment_id": assessment_id, "parameters": {"username": "admin", "service": "ssh"}}
+        json={
+            "assessment_id": assessment_id,
+            "parameters": {"username": "admin", "service": "ssh"},
+        },
     )
     assert job_res.status_code == 201
     job_data = job_res.json()

@@ -1,9 +1,12 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, ConfigDict
 
 
 class AuditLogResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: Optional[int]
     action: str
@@ -11,6 +14,3 @@ class AuditLogResponse(BaseModel):
     details: Dict[str, Any]
     ip_address: Optional[str]
     timestamp: datetime
-
-    class Config:
-        from_attributes = True

@@ -1,6 +1,8 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.job import JobStatus
 
 
@@ -10,6 +12,8 @@ class JobCreate(BaseModel):
 
 
 class JobResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     assessment_id: int
     engine_name: str
@@ -21,6 +25,3 @@ class JobResponse(BaseModel):
     created_at: datetime
     started_at: Optional[datetime]
     completed_at: Optional[datetime]
-
-    class Config:
-        from_attributes = True

@@ -12,12 +12,19 @@ services:
       - DATABASE_URL=postgresql+psycopg://aegisaudit:aegisaudit@postgres:5432/aegisaudit
       - REDIS_URL=redis://redis:6379/0
       - MOCK_ENGINE=true
-      - JWT_SECRET=CHANGE_ME_FOR_LOCAL_DEVELOPMENT
+      - JWT_SECRET=CHANGE_ME_FOR_LOCAL_DEVELOPMENT_SECRET_KEY_32_CHARS_MIN
+      - LOG_LEVEL=INFO
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   frontend:
@@ -27,7 +34,8 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
 
   postgres:
@@ -50,6 +58,11 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

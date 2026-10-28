@@ -1,11 +1,12 @@
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Tuple
+
 from app.adapters.base import BaseEngineAdapter
 
 
 class HydraAdapter(BaseEngineAdapter):
     """Hydra Network Authentication Assessment Adapter."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(name="Hydra", category="Authentication Audit", requires_network=True)
 
     def build_command(self, target: str, parameters: Dict[str, Any]) -> List[str]:
@@ -24,17 +25,21 @@ class HydraAdapter(BaseEngineAdapter):
         findings = []
         for line in raw_output.strip().splitlines():
             if "[22][ssh]" in line or "[80][http]" in line or "host:" in line.lower():
-                findings.append({
-                    "title": "Valid Network Credentials Identified (Hydra)",
-                    "severity": "CRITICAL",
-                    "vulnerability_type": "Weak Service Authentication",
-                    "target": line.strip(),
-                    "details": f"Hydra successfully authenticated against target service: {line.strip()}",
-                    "remediation": "Disable default password login, enforce public key authentication, and deploy fail2ban / IP rate limiting."
-                })
+                findings.append(
+                    {
+                        "title": "Valid Network Credentials Identified (Hydra)",
+                        "severity": "CRITICAL",
+                        "vulnerability_type": "Weak Service Authentication",
+                        "target": line.strip(),
+                        "details": f"Hydra successfully authenticated against target service: {line.strip()}",
+                        "remediation": "Disable default password login, enforce public key authentication, and deploy fail2ban / IP rate limiting.",
+                    }
+                )
         return findings
 
-    def generate_mock_results(self, target: str, parameters: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
+    def generate_mock_results(
+        self, target: str, parameters: Dict[str, Any]
+    ) -> Tuple[str, List[Dict[str, Any]]]:
         service = str(parameters.get("service", "ssh")).upper()
         port = parameters.get("port", 22)
 
@@ -54,7 +59,7 @@ class HydraAdapter(BaseEngineAdapter):
                 "vulnerability_type": "Weak Service Authentication",
                 "target": f"{target}:{port}",
                 "details": f"Simulated Audit Result: Target network service {service} accepted default credential pair 'admin:Password123!'.",
-                "remediation": f"Immediately disable root/admin password logins on {service} port {port} and enforce SSH keys / MFA."
+                "remediation": f"Immediately disable root/admin password logins on {service} port {port} and enforce SSH keys / MFA.",
             }
         ]
         return mock_output, findings

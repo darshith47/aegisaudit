@@ -1,22 +1,23 @@
 import hashlib
-from datetime import datetime
-from sqlalchemy.orm import Session
-from typing import Dict, Any
+from datetime import datetime, timezone
+from typing import Optional
 
+from sqlalchemy.orm import Session
+
+from app.adapters.registry import engine_registry
 from app.config import settings
-from app.models.job import Job, JobStatus
 from app.models.assessment import Assessment, AssessmentStatus
+from app.models.audit import AuditLog
 from app.models.evidence import Evidence
 from app.models.finding import Finding, FindingSeverity
-from app.models.audit import AuditLog
-from app.adapters.registry import engine_registry
+from app.models.job import Job, JobStatus
 
 
 class JobRunnerService:
     """Orchestrates security assessment job execution & mock mode processing."""
 
     @staticmethod
-    def execute_job(db: Session, job_id: int, user_id: int = None) -> Job:
+    def execute_job(db: Session, job_id: int, user_id: Optional[int] = None) -> Job:
         job = db.query(Job).filter(Job.id == job_id).first()
         if not job:
             raise ValueError(f"Job #{job_id} not found.")
@@ -38,23 +39,21 @@ class JobRunnerService:
 
         # Step 1: Centralized Scope Engine Check
         is_allowed, scope_reason = adapter.validate_scope(
-            scope=scope,
-            target=assessment.target,
-            parameters=job.parameters or {}
+            scope=scope, target=assessment.target, parameters=job.parameters or {}
         )
 
         if not is_allowed:
             job.status = JobStatus.REJECTED_OUT_OF_SCOPE
             job.progress = 0.0
             job.output = f"REJECTED BY CENTRALIZED SCOPE ENGINE: {scope_reason}"
-            job.completed_at = datetime.utcnow()
-            
+            job.completed_at = datetime.now(timezone.utc)
+
             # Log audit event
             audit = AuditLog(
                 user_id=user_id,
                 action="JOB_REJECTED_OUT_OF_SCOPE",
                 resource=f"job:{job.id}",
-                details={"target": assessment.target, "scope_id": scope.id, "reason": scope_reason}
+                details={"target": assessment.target, "scope_id": scope.id, "reason": scope_reason},
             )
             db.add(audit)
             db.commit()
@@ -62,7 +61,7 @@ class JobRunnerService:
 
         # Update Job status to RUNNING
         job.status = JobStatus.RUNNING
-        job.started_at = datetime.utcnow()
+        job.started_at = datetime.now(timezone.utc)
         job.progress = 0.1
         assessment.status = AssessmentStatus.IN_PROGRESS
         db.commit()
@@ -70,8 +69,7 @@ class JobRunnerService:
         # Step 2: Run in Mock Mode (default) or real execution
         if settings.MOCK_ENGINE or job.mock_mode:
             raw_output, mock_findings = adapter.generate_mock_results(
-                target=assessment.target,
-                parameters=job.parameters or {}
+                target=assessment.target, parameters=job.parameters or {}
             )
         else:
             # Live execution fallback (safety dry-run)
@@ -82,9 +80,7 @@ class JobRunnerService:
         # Step 3: Create Evidence entry with SHA256 integrity hash
         sha256_hash = hashlib.sha256(raw_output.encode("utf-8")).hexdigest()
         evidence = Evidence(
-            raw_output=raw_output,
-            sha256_hash=sha256_hash,
-            collected_at=datetime.utcnow()
+            raw_output=raw_output, sha256_hash=sha256_hash, collected_at=datetime.now(timezone.utc)
         )
         db.add(evidence)
         db.flush()
@@ -100,7 +96,7 @@ class JobRunnerService:
                 details=mf["details"],
                 remediation=mf["remediation"],
                 evidence_id=evidence.id,
-                is_mock=settings.MOCK_ENGINE
+                is_mock=settings.MOCK_ENGINE,
             )
             db.add(finding)
 
@@ -108,7 +104,7 @@ class JobRunnerService:
         job.status = JobStatus.COMPLETED
         job.progress = 1.0
         job.output = raw_output
-        job.completed_at = datetime.utcnow()
+        job.completed_at = datetime.now(timezone.utc)
         assessment.status = AssessmentStatus.COMPLETED
 
         # Create Audit Log record
@@ -120,8 +116,8 @@ class JobRunnerService:
                 "engine": job.engine_name,
                 "target": assessment.target,
                 "findings_count": len(mock_findings),
-                "evidence_hash": sha256_hash
-            }
+                "evidence_hash": sha256_hash,
+            },
         )
         db.add(audit)
         db.commit()

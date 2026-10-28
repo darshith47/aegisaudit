@@ -1,13 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
+from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.assessment import Assessment
 from app.models.user import User
 from app.schemas.report import ReportRequest, ReportResponse
-from app.core.security import get_current_user
 from app.services.report_generator import ExecutiveReportGenerator
 
 router = APIRouter(prefix="/reports", tags=["Executive Security Reports"])
@@ -17,8 +18,8 @@ router = APIRouter(prefix="/reports", tags=["Executive Security Reports"])
 def generate_report(
     req: ReportRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+    current_user: User = Depends(get_current_user),
+) -> ReportResponse:
     """Generate executive audit report in Markdown or HTML format."""
     assessment = db.query(Assessment).filter(Assessment.id == req.assessment_id).first()
     if not assessment:
@@ -33,9 +34,9 @@ def generate_report(
         assessment_id=assessment.id,
         title=assessment.title,
         target=assessment.target,
-        generated_at=datetime.utcnow(),
+        generated_at=datetime.now(timezone.utc),
         format=req.format,
-        content=content
+        content=content,
     )
 
 
@@ -43,7 +44,8 @@ def generate_report(
 def view_html_report(
     assessment_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+    current_user: User = Depends(get_current_user),
+) -> HTMLResponse:
     """Render executive audit report directly as HTML page."""
-    return ExecutiveReportGenerator.generate_html_report(db, assessment_id)
+    html_content = ExecutiveReportGenerator.generate_html_report(db, assessment_id)
+    return HTMLResponse(content=html_content)

@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.adapters.registry import engine_registry
+from app.core.security import get_current_user, require_role
 from app.db.session import get_db
 from app.models.assessment import Assessment, AssessmentStatus
 from app.models.scope import Scope
 from app.models.user import User, UserRole
 from app.schemas.assessment import AssessmentCreate, AssessmentResponse
-from app.core.security import get_current_user, require_role
-from app.adapters.registry import engine_registry
 
 router = APIRouter(prefix="/assessments", tags=["Assessment Management"])
 
@@ -17,8 +18,8 @@ router = APIRouter(prefix="/assessments", tags=["Assessment Management"])
 def create_assessment(
     ass_in: AssessmentCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.AUDITOR]))
-):
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.AUDITOR])),
+) -> Assessment:
     """Create a new authorized security assessment."""
     scope = db.query(Scope).filter(Scope.id == ass_in.scope_id).first()
     if not scope:
@@ -29,7 +30,7 @@ def create_assessment(
     if not adapter:
         raise HTTPException(
             status_code=400,
-            detail=f"Engine '{ass_in.engine}' is not supported. See /api/v1/engines for matrix."
+            detail=f"Engine '{ass_in.engine}' is not supported. See /api/v1/engines for matrix.",
         )
 
     assessment = Assessment(
@@ -38,7 +39,7 @@ def create_assessment(
         target=ass_in.target,
         engine=ass_in.engine.lower(),
         scope_id=ass_in.scope_id,
-        status=AssessmentStatus.CREATED
+        status=AssessmentStatus.CREATED,
     )
     db.add(assessment)
     db.commit()
@@ -47,13 +48,19 @@ def create_assessment(
 
 
 @router.get("/", response_model=List[AssessmentResponse])
-def list_assessments(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def list_assessments(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+) -> List[Assessment]:
     """List all credential security assessments."""
     return db.query(Assessment).order_by(Assessment.id.desc()).all()
 
 
 @router.get("/{assessment_id}", response_model=AssessmentResponse)
-def get_assessment(assessment_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_assessment(
+    assessment_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Assessment:
     """Get assessment details by ID."""
     assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
     if not assessment:

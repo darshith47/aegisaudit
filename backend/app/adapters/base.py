@@ -1,18 +1,21 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Any, List
-from app.models.scope import Scope
+from typing import Any, Dict, List, Tuple
+
 from app.core.scope_engine import ScopeEngine
+from app.models.scope import Scope
 
 
 class BaseEngineAdapter(ABC):
     """Abstract Base Class for Security Engine Adapters."""
 
-    def __init__(self, name: str, category: str, requires_network: bool = False):
+    def __init__(self, name: str, category: str, requires_network: bool = False) -> None:
         self.name = name
         self.category = category
         self.requires_network = requires_network
 
-    def validate_scope(self, scope: Scope, target: str, parameters: Dict[str, Any]) -> Tuple[bool, str]:
+    def validate_scope(
+        self, scope: Scope, target: str, parameters: Dict[str, Any]
+    ) -> Tuple[bool, str]:
         """Validate if the engine operation against the target is within authorized scope."""
         port = parameters.get("port")
         protocol = parameters.get("protocol") or parameters.get("service")
@@ -29,6 +32,8 @@ class BaseEngineAdapter(ABC):
         pass
 
     @abstractmethod
-    def generate_mock_results(self, target: str, parameters: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
+    def generate_mock_results(
+        self, target: str, parameters: Dict[str, Any]
+    ) -> Tuple[str, List[Dict[str, Any]]]:
         """Generate safe, synthetic mock results clearly tagged with DEMO / MOCK."""
         pass

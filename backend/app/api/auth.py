@@ -1,22 +1,30 @@
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from typing import List
 
+from app.core.security import (
+    create_access_token,
+    get_current_user,
+    get_password_hash,
+    verify_password,
+)
 from app.db.session import get_db
-from app.models.user import User, UserRole
-from app.schemas.auth import UserCreate, UserLogin, Token, UserResponse
-from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user, require_role
+from app.models.user import User
+from app.schemas.auth import Token, UserCreate, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
+def register_user(user_in: UserCreate, db: Session = Depends(get_db)) -> User:
     """Register a new platform user."""
-    existing_user = db.query(User).filter(
-        (User.username == user_in.username) | (User.email == user_in.email)
-    ).first()
+    existing_user = (
+        db.query(User)
+        .filter((User.username == user_in.username) | (User.email == user_in.email))
+        .first()
+    )
     if existing_user:
         raise HTTPException(status_code=400, detail="Username or email already registered.")
 
@@ -24,7 +32,7 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
         username=user_in.username,
         email=user_in.email,
         hashed_password=get_password_hash(user_in.password),
-        role=user_in.role
+        role=user_in.role,
     )
     db.add(new_user)
     db.commit()
@@ -33,7 +41,9 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+) -> Dict[str, Any]:
     """OAuth2 compatible login endpoint."""
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -47,6 +57,6 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 
 @router.get("/me", response_model=UserResponse)
-def read_current_user(current_user: User = Depends(get_current_user)):
+def read_current_user(current_user: User = Depends(get_current_user)) -> User:
     """Get authenticated user profile."""
     return current_user

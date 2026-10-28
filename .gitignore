@@ -29,6 +29,9 @@ build/
 
 # Output Data & Logs
 *.log
+*.db
+*.sqlite
+*.sqlite3
 tmp/
 temp/
 jobs/
